@@ -36,14 +36,15 @@ Composer only, for now. All Composer dependencies are treated alike.
 | vulnerability fix | own PR per package, to the newest version of that package | immediately | automerge when it is a patch and automerge is on, otherwise a developer |
 
 Vulnerability PRs go to the newest release rather than the lowest fixed one (`vulnerabilityFixStrategy:
-highest`): current Composer refuses to resolve a lock that keeps any package with a known advisory, and
-the lowest fix often still pins a vulnerable dependency (Craft 5.10.8 and svg-sanitize 0.22 was the
-first case). Until the vulnerable core package has been updated, other PRs on that site may fail to
-resolve with "not loaded, because they are affected by security advisories"; they retry once it merges.
+highest`); the lowest fix often still pins a vulnerable dependency (Craft 5.10.8 and svg-sanitize 0.22
+was the first case). Composer 2.9+ also refuses to resolve a lock that keeps any package with a known
+advisory, which on a site that is behind blocks every update except the one that fixes that package.
+The runner therefore sets `COMPOSER_POLICY_ADVISORIES_BLOCK=0` for its Composer runs: Renovate makes
+the incremental update, the vulnerable package gets its own security PR, and verify gates both.
 
 Other settings: `rangeStrategy: update-lockfile` so an exact pin like `"3.1.47"` is replaced and a
 caret range keeps its range with the lock updated; a Dependency Dashboard issue per site; at most
-three open PRs at once; label `renovate`.
+six open PRs at once (security PRs count towards it, so three is too few); label `renovate`.
 
 The craft-ci verify action may push a "project config" commit onto a Renovate branch with the author
 `craft-ci@netlife.no`. That address is in `gitIgnoredAuthors`, so Renovate does not treat the branch as
