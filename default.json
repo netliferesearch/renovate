@@ -1,0 +1,46 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Netlife Craft CMS update policy. Sites extend this with one line.",
+  "enabledManagers": ["composer"],
+  "timezone": "Europe/Oslo",
+  "rangeStrategy": "update-lockfile",
+  "dependencyDashboard": true,
+  "labels": ["renovate"],
+  "prConcurrentLimit": 3,
+  "gitIgnoredAuthors": ["craft-ci@netlife.no"],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["renovate", "security"]
+  },
+  "packageRules": [
+    {
+      "description": "Patch updates, one PR a week. Automerge is switched on after the first grouped PR has been merged by hand.",
+      "matchManagers": ["composer"],
+      "matchUpdateTypes": ["patch"],
+      "groupName": "Craft patches",
+      "schedule": ["before 6am on monday"],
+      "automerge": false
+    },
+    {
+      "description": "Minor updates, one PR a month, always merged by a developer.",
+      "matchManagers": ["composer"],
+      "matchUpdateTypes": ["minor"],
+      "groupName": "Craft minors",
+      "schedule": ["before 6am on the first day of the month"],
+      "automerge": false
+    },
+    {
+      "description": "Majors are project work, never automated.",
+      "matchManagers": ["composer"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "Vulnerability fixes open immediately. Patch-level fixes automerge once automerge is on.",
+      "matchManagers": ["composer"],
+      "isVulnerabilityAlert": true,
+      "matchUpdateTypes": ["patch"],
+      "automerge": false
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+# Runs Renovate against the repositories listed in config.js. Daily; the preset's schedules
+# decide what actually opens on a given day. Dispatch with dry-run=full to see the plan only.
+name: Renovate
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Log what Renovate would do without opening anything
+        type: choice
+        options: [none, full]
+        default: none
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: renovate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v46.3.8
+        with:
+          configurationFile: config.js
+          token: ${{ secrets.RENOVATE_TOKEN }}
+          renovate-version: 44.165.2
+          env-regex: "^(?:RENOVATE_\\w+|LOG_LEVEL|GITHUB_COM_TOKEN|NODE_OPTIONS|NO_COLOR|(?:HTTPS?|NO)_PROXY|(?:https?|no)_proxy|DRY_RUN)$"
+        env:
+          LOG_LEVEL: info
+          DRY_RUN: ${{ inputs.dry-run || 'none' }}
