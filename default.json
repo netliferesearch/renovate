@@ -10,7 +10,8 @@
   "gitIgnoredAuthors": ["craft-ci@netlife.no"],
   "vulnerabilityAlerts": {
     "enabled": true,
-    "labels": ["renovate", "security"]
+    "labels": ["renovate", "security"],
+    "vulnerabilityFixStrategy": "highest"
   },
   "packageRules": [
     {
