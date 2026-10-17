@@ -33,7 +33,13 @@ Composer only, for now. All Composer dependencies are treated alike.
 | patch | one group, "Craft patches" | weekly, Monday before 06:00 Oslo | automerge when verify is green (off until the first group has been merged by hand) |
 | minor | one group, "Craft minors" | monthly, first day before 06:00 Oslo | a developer |
 | major | none | never | project work, outside Renovate |
-| vulnerability fix | own PR per package | immediately | automerge when it is a patch and automerge is on, otherwise a developer |
+| vulnerability fix | own PR per package, to the newest version of that package | immediately | automerge when it is a patch and automerge is on, otherwise a developer |
+
+Vulnerability PRs go to the newest release rather than the lowest fixed one (`vulnerabilityFixStrategy:
+highest`): current Composer refuses to resolve a lock that keeps any package with a known advisory, and
+the lowest fix often still pins a vulnerable dependency (Craft 5.10.8 and svg-sanitize 0.22 was the
+first case). Until the vulnerable core package has been updated, other PRs on that site may fail to
+resolve with "not loaded, because they are affected by security advisories"; they retry once it merges.
 
 Other settings: `rangeStrategy: update-lockfile` so an exact pin like `"3.1.47"` is replaced and a
 caret range keeps its range with the lock updated; a Dependency Dashboard issue per site; at most
