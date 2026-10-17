@@ -6,7 +6,7 @@
   "rangeStrategy": "update-lockfile",
   "dependencyDashboard": true,
   "labels": ["renovate"],
-  "prConcurrentLimit": 3,
+  "prConcurrentLimit": 6,
   "gitIgnoredAuthors": ["craft-ci@netlife.no"],
   "vulnerabilityAlerts": {
     "enabled": true,
