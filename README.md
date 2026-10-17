@@ -65,21 +65,17 @@ bash tests/validate.sh
 
 ## Token
 
-Secret `RENOVATE_TOKEN` in the `renovate` environment. During the pilot it is a fine-grained personal
-access token, resource owner Feedsystem, repository access limited to the pilot repo(s), expiry 90
-days, with these permissions:
+Secret `RENOVATE_TOKEN` in the `renovate` environment. During the pilot it is a classic personal access
+token of Svale's with the `repo` and `workflow` scopes, expiry 90 days (Feedsystem does not allow a
+fine-grained token, which would have been limited to the pilot repo). A classic token reaches every
+repository the account can, in both organizations, so:
 
-| Permission | Access |
-| --- | --- |
-| Contents | read and write |
-| Pull requests | read and write |
-| Issues | read and write (dependency dashboard) |
-| Workflows | read and write |
-| Commit statuses | read and write |
-| Dependabot alerts | read (vulnerability PRs) |
-| Metadata | read |
-| Members (organization) | read |
+- it lives only in the `renovate` environment here, which is limited to protected branches, and
+- as `RENOVATE_PUSH_TOKEN` on each pilot site repo for craft-ci's project config commit, where anyone
+  with write access to that repo could read it through a workflow, and
+- it is replaced by a GitHub App as soon as the organization admins have created one; `config.js`
+  then switches to app credentials and the site secret becomes an App installation token.
 
-A GitHub App replaces the token for the fleet rollout; `config.js` then switches to app credentials.
-The same token value is stored on each site repo as `RENOVATE_PUSH_TOKEN` for craft-ci's project
-config commit, and is replaced at the same time.
+Once the App exists, the token is revoked. If a fine-grained token becomes possible first, it needs:
+Contents, Pull requests, Issues, Workflows and Commit statuses (read and write), Dependabot alerts and
+Metadata (read), and organization Members (read).
