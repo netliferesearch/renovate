@@ -15,12 +15,12 @@
   },
   "packageRules": [
     {
-      "description": "Patch updates, one PR a week. Automerge is switched on after the first grouped PR has been merged by hand.",
+      "description": "Patch updates, one PR a week, automerged when verify is green.",
       "matchManagers": ["composer"],
       "matchUpdateTypes": ["patch"],
       "groupName": "Craft patches",
       "schedule": ["before 6am on monday"],
-      "automerge": false
+      "automerge": true
     },
     {
       "description": "Minor updates, one PR a month, always merged by a developer.",
@@ -37,11 +37,11 @@
       "enabled": false
     },
     {
-      "description": "Vulnerability fixes open immediately. Patch-level fixes automerge once automerge is on.",
+      "description": "Vulnerability fixes open immediately; patch-level fixes automerge when verify is green.",
       "matchManagers": ["composer"],
       "isVulnerabilityAlert": true,
       "matchUpdateTypes": ["patch"],
-      "automerge": false
+      "automerge": true
     }
   ]
 }
