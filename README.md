@@ -30,8 +30,8 @@ Composer only, for now. All Composer dependencies are treated alike.
 
 | Update | PR | When | Merge |
 | --- | --- | --- | --- |
-| patch | one group, "Craft patches" | weekly, Monday before 06:00 Oslo | automerge when verify is green (on since 19 Oct 2026) |
-| minor | one group, "Craft minors" | monthly, first day before 06:00 Oslo | a developer |
+| patch | one group, "Craft patches", releases at least 3 days old | weekly, Monday before 06:00 Oslo | automerge when verify is green (on since 19 Oct 2026) |
+| minor | one group, "Craft minors", releases at least 3 days old, labelled `preview` | monthly, first day before 06:00 Oslo | a developer, with a preview site |
 | major | none | never | project work, outside Renovate |
 | vulnerability fix | own PR per package, to the newest version of that package | immediately | automerge when it is a patch and automerge is on, otherwise a developer |
 
