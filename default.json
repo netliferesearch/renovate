@@ -20,6 +20,7 @@
       "matchUpdateTypes": ["patch"],
       "groupName": "Craft patches",
       "schedule": ["before 6am on monday"],
+      "minimumReleaseAge": "3 days",
       "automerge": true
     },
     {
@@ -28,6 +29,7 @@
       "matchUpdateTypes": ["minor"],
       "groupName": "Craft minors",
       "schedule": ["before 6am on the first day of the month"],
+      "minimumReleaseAge": "3 days",
       "automerge": false,
       "addLabels": ["preview"]
     },
