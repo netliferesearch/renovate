@@ -23,12 +23,13 @@
       "automerge": true
     },
     {
-      "description": "Minor updates, one PR a month, always merged by a developer.",
+      "description": "Minor updates, one PR a month, always merged by a developer. Labelled preview so craft-preview builds a site to look at.",
       "matchManagers": ["composer"],
       "matchUpdateTypes": ["minor"],
       "groupName": "Craft minors",
       "schedule": ["before 6am on the first day of the month"],
-      "automerge": false
+      "automerge": false,
+      "addLabels": ["preview"]
     },
     {
       "description": "Majors are project work, never automated.",
