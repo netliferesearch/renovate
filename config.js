@@ -1,7 +1,7 @@
 // Runner configuration for self-hosted Renovate. Policy lives in default.json, not here.
 module.exports = {
   platform: 'github',
-  repositories: ['Feedsystem/nch'],
+  repositories: ['Feedsystem/nch', 'Feedsystem/nfi'],
   onboarding: true,
   onboardingConfig: {
     $schema: 'https://docs.renovatebot.com/renovate-schema.json',
