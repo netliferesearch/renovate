@@ -4,6 +4,7 @@
   "enabledManagers": ["composer"],
   "timezone": "Europe/Oslo",
   "rangeStrategy": "update-lockfile",
+  "postUpdateOptions": ["composerWithDependencies"],
   "dependencyDashboard": true,
   "labels": ["renovate"],
   "prConcurrentLimit": 6,

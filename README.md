@@ -46,6 +46,12 @@ Other settings: `rangeStrategy: update-lockfile` so an exact pin like `"3.1.47"`
 caret range keeps its range with the lock updated; a Dependency Dashboard issue per site; at most
 six open PRs at once (security PRs count towards it, so three is too few); label `renovate`.
 
+Lock updates run with `--with-dependencies` (`postUpdateOptions: composerWithDependencies`), so the
+packages that an updated package depends on may move too. Without it, one blocked transitive
+dependency fails the whole group's lock update and the PR changes only `composer.json` (first seen
+1 Nov 2026: `craftcms/generator` 2.2.0 needs `nikic/php-parser` ^5, held at 4.x by `psy/psysh` 0.11).
+Root requirements such as `craftcms/cms` still move only when they are in the group.
+
 The craft-ci verify action may push a "project config" commit onto a Renovate branch with the author
 `craft-ci@netlife.no`. That address is in `gitIgnoredAuthors`, so Renovate does not treat the branch as
 edited by a human. Keep the two in sync.
