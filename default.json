@@ -4,7 +4,6 @@
   "enabledManagers": ["composer"],
   "timezone": "Europe/Oslo",
   "rangeStrategy": "update-lockfile",
-  "postUpdateOptions": ["composerWithDependencies"],
   "dependencyDashboard": true,
   "labels": ["renovate"],
   "prConcurrentLimit": 6,
@@ -15,6 +14,11 @@
     "vulnerabilityFixStrategy": "highest"
   },
   "packageRules": [
+    {
+      "description": "Look up versions on Packagist only. Sites list composer.craftcms.com as a non-canonical mirror, but Renovate takes the first registry that answers, and that mirror serves stale version lists for third-party packages.",
+      "matchDatasources": ["packagist"],
+      "registryUrls": ["https://repo.packagist.org"]
+    },
     {
       "description": "Patch updates, one PR a week, automerged when verify is green.",
       "matchManagers": ["composer"],

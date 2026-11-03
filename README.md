@@ -46,11 +46,20 @@ Other settings: `rangeStrategy: update-lockfile` so an exact pin like `"3.1.47"`
 caret range keeps its range with the lock updated; a Dependency Dashboard issue per site; at most
 six open PRs at once (security PRs count towards it, so three is too few); label `renovate`.
 
-Lock updates run with `--with-dependencies` (`postUpdateOptions: composerWithDependencies`), so the
-packages that an updated package depends on may move too. Without it, one blocked transitive
-dependency fails the whole group's lock update and the PR changes only `composer.json` (first seen
-1 Nov 2026: `craftcms/generator` 2.2.0 needs `nikic/php-parser` ^5, held at 4.x by `psy/psysh` 0.11).
-Root requirements such as `craftcms/cms` still move only when they are in the group.
+Version lookups go to Packagist only (the first package rule). The Craft starter project lists
+`composer.craftcms.com` in `composer.json` as a non-canonical mirror; Composer then also asks Packagist,
+but Renovate takes the first registry that answers and ignores `canonical: false`. The mirror serves
+stale version lists for third-party packages (found 3 Nov 2026: `yiisoft/yii2-shell` stopped at 2.0.5,
+`vlucas/phpdotenv` at 5.6.1, `yiisoft/yii2-redis` at 2.0.18), so without the rule those packages
+never get a PR, security fixes included.
+
+Lock updates run with Composer's `--with-dependencies` (Renovate's default), so the packages that an
+updated package depends on may move too. A package outside that tree stays locked, and when it pins a
+shared dependency the whole group's lock update fails and the PR changes only `composer.json`. First
+seen 1 Nov 2026: `craftcms/generator` 2.2.0 needs `nikic/php-parser` ^5, held at 4.x by the locked
+`psy/psysh` 0.11, which the locked `yiisoft/yii2-shell` 2.0.5 keeps below 0.12. The way out is the
+update of the pinning package (here `yii2-shell` 2.0.6, a patch), after which the group's PR is rebased
+and resolves.
 
 The craft-ci verify action may push a "project config" commit onto a Renovate branch with the author
 `craft-ci@netlife.no`. That address is in `gitIgnoredAuthors`, so Renovate does not treat the branch as
