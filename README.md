@@ -33,14 +33,20 @@ Composer only, for now. All Composer dependencies are treated alike.
 | patch | one group, "Craft patches", releases at least 3 days old | weekly, Monday before 06:00 Oslo | automerge when verify is green (on since 19 Oct 2026) |
 | minor | one group, "Craft minors", releases at least 3 days old, labelled `preview` | monthly, first day before 06:00 Oslo | a developer, with a preview site |
 | major | none | never | project work, outside Renovate |
-| vulnerability fix | own PR per package, to the newest version of that package | immediately | automerge when it is a patch and automerge is on, otherwise a developer |
+| vulnerability fix | own PR per package, to the lowest version that fixes the advisory | immediately | automerge when it is a patch and automerge is on, otherwise a developer |
 
-Vulnerability PRs go to the newest release rather than the lowest fixed one (`vulnerabilityFixStrategy:
-highest`); the lowest fix often still pins a vulnerable dependency (Craft 5.10.8 and svg-sanitize 0.22
-was the first case). Composer 2.9+ also refuses to resolve a lock that keeps any package with a known
-advisory, which on a site that is behind blocks every update except the one that fixes that package.
-The runner therefore sets `COMPOSER_POLICY_ADVISORIES_BLOCK=0` for its Composer runs: Renovate makes
-the incremental update, the vulnerable package gets its own security PR, and verify gates both.
+Vulnerability PRs go to the lowest release that fixes the advisory (`vulnerabilityFixStrategy: lowest`,
+Renovate's default). That keeps a security fix a patch whenever the maintainer shipped one, so it
+automerges on green verify, and the next minor of the same package arrives through the monthly group
+with a preview and a developer. The pilot ran with `highest` until 4 Nov 2026, when the fix for
+`yiisoft/yii2-redis` (advisory fixed in 2.0.20) opened at 2.1.2 instead, a minor whose new
+`ConnectionInterface` breaks nch's cache config, so a PR meant to merge on its own needed a developer.
+`highest` had been chosen because the lowest fix can still pin a vulnerable dependency (Craft 5.10.8 and
+svg-sanitize 0.22 was the first case); such a package gets its own security PR from the next alert.
+Composer 2.9+ also refuses to resolve a lock that keeps any package with a known advisory, which on a
+site that is behind blocks every update except the one that fixes that package. The runner therefore
+sets `COMPOSER_POLICY_ADVISORIES_BLOCK=0` for its Composer runs: Renovate makes the incremental
+update, the vulnerable package gets its own security PR, and verify gates both.
 
 Other settings: `rangeStrategy: update-lockfile` so an exact pin like `"3.1.47"` is replaced and a
 caret range keeps its range with the lock updated; a Dependency Dashboard issue per site; at most

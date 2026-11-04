@@ -11,7 +11,7 @@
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": ["renovate", "security"],
-    "vulnerabilityFixStrategy": "highest"
+    "vulnerabilityFixStrategy": "lowest"
   },
   "packageRules": [
     {
