@@ -30,8 +30,9 @@ Composer only, for now. All Composer dependencies are treated alike.
 
 | Update | PR | When | Merge |
 | --- | --- | --- | --- |
-| patch | one group, "Craft patches", releases at least 3 days old | weekly, Monday before 06:00 Oslo | automerge when verify is green (on since 19 Oct 2026) |
-| minor | one group, "Craft minors", releases at least 3 days old, labelled `preview` | monthly, first day before 06:00 Oslo | a developer, with a preview site |
+| patch | one group, "Craft patches", releases at least 3 days old | weekly, Monday morning | automerge when verify is green (on since 19 Oct 2026) |
+| minor | one group, "Craft minors", releases at least 3 days old, labelled `preview` | monthly, second Monday | a developer, with a preview site |
+| lock file maintenance | one PR, a fresh resolve of `composer.lock` within the pinned direct dependencies, labelled `preview` | monthly, first Monday | a developer, with a preview site |
 | major | none | never | project work, outside Renovate |
 | vulnerability fix | own PR per package, to the lowest version that fixes the advisory | immediately | automerge when it is a patch and automerge is on, otherwise a developer |
 
@@ -48,9 +49,17 @@ site that is behind blocks every update except the one that fixes that package. 
 sets `COMPOSER_POLICY_ADVISORIES_BLOCK=0` for its Composer runs: Renovate makes the incremental
 update, the vulnerable package gets its own security PR, and verify gates both.
 
-Other settings: `rangeStrategy: update-lockfile` so an exact pin like `"3.1.47"` is replaced and a
-caret range keeps its range with the lock updated; a Dependency Dashboard issue per site; at most
-six open PRs at once (security PRs count towards it, so three is too few); label `renovate`.
+Other settings: `rangeStrategy: pin`, so every direct dependency in `composer.json` is an exact version
+and only the groups above move them (a site that still has caret ranges gets a one-time "Pin
+dependencies" PR, which changes `composer.json` and nothing in the lock); a Dependency Dashboard issue
+per site; at most six open PRs at once (security PRs count towards it, so three is too few); label
+`renovate`.
+
+Merges happen in working hours. GitHub's native auto-merge is off (`platformAutomerge: false`), because
+it merges the moment verify is green, at night. Renovate merges instead, within `automergeSchedule`:
+Monday to Thursday between 08:00 and 12:00 Oslo. Nothing automatic reaches production from Thursday
+noon to Monday morning. A security PR that opens on a Friday waits for Monday unless a developer merges
+it by hand.
 
 Version lookups go to Packagist only (the first package rule). The Craft starter project lists
 `composer.craftcms.com` in `composer.json` as a non-canonical mirror; Composer then also asks Packagist,
@@ -63,9 +72,18 @@ Lock updates run with Composer's `--with-dependencies` (Renovate's default), so 
 updated package depends on may move too. A package outside that tree stays locked, and when it pins a
 shared dependency the whole group's lock update fails and the PR changes only `composer.json`. First
 seen 1 Nov 2026: `craftcms/generator` 2.2.0 needs `nikic/php-parser` ^5, held at 4.x by the locked
-`psy/psysh` 0.11, which the locked `yiisoft/yii2-shell` 2.0.5 keeps below 0.12. The way out is the
-update of the pinning package (here `yii2-shell` 2.0.6, a patch), after which the group's PR is rebased
-and resolves.
+`psy/psysh` 0.11, which the locked `yiisoft/yii2-shell` 2.0.5 keeps below 0.12. Updating the pinning
+package is not enough: with `yii2-shell` 2.0.6 in the lock the group still failed (6 Nov 2026), because
+`psysh` belongs to `yii2-shell`, which Renovate no longer names once it is current, and
+`--with-all-dependencies` fails the same way. Packages that only the lock names never move through a
+direct update. That is what lock file maintenance is for: once a month Renovate deletes `composer.lock`
+and resolves it fresh within the pinned direct dependencies, so transitive packages stay current and a
+stale pin like this one heals on the next maintenance PR without anyone touching config. On 6 Nov 2026
+a fresh resolve took the advisories in the `main` locks from 22 (nfi) and 13 (nch), all transitive, to
+none. Pinning is what keeps that PR transitive-only; with caret ranges a fresh resolve would also move
+Craft and the plugins, outside the minors policy. The maintenance PR can be forced from the Dependency
+Dashboard's checkbox when it should not wait for the first Monday. No package-specific rules: a
+deadlock that cannot wait for maintenance gets a one-off `composer update` in the site repo.
 
 The craft-ci verify action may push a "project config" commit onto a Renovate branch with the author
 `craft-ci@netlife.no`. That address is in `gitIgnoredAuthors`, so Renovate does not treat the branch as
@@ -74,8 +92,11 @@ edited by a human. Keep the two in sync.
 ## The runner
 
 `.github/workflows/renovate.yml` runs `renovatebot/github-action@v46.3.8` with Renovate `44.165.2`
-once a day at 02:00 UTC and on demand. The job uses the Actions environment `renovate`, which is
-limited to protected branches, so a PR against this repo never sees the token.
+on weekday mornings at 05:30 and 07:30 UTC (06:30 and 08:30 Oslo in winter, an hour later in summer)
+and on demand. The first pass opens and rebases PRs so verify has run before people arrive; the second
+pass automerges what is green, inside the preset's `automergeSchedule`. No runs on Friday or Saturday
+night, or at any time on weekends. The job uses the Actions environment `renovate`, which is limited
+to protected branches, so a PR against this repo never sees the token.
 
 Dry run, to read what Renovate would do without opening anything:
 

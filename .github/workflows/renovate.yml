@@ -1,10 +1,14 @@
-# Runs Renovate against the repositories listed in config.js. Daily; the preset's schedules
-# decide what actually opens on a given day. Dispatch with dry-run=full to see the plan only.
+# Runs Renovate against the repositories listed in config.js. Weekday mornings, twice: the first pass
+# (06:30 or 07:30 Oslo) opens and updates PRs so verify has run before people arrive, the second
+# (08:30 or 09:30 Oslo) automerges what is green, inside the preset's automergeSchedule. Nothing runs
+# on weekends. The preset's schedules decide what opens on a given day. Dispatch with dry-run=full to
+# see the plan only.
 name: Renovate
 
 on:
   schedule:
-    - cron: "0 2 * * *"
+    - cron: "30 5 * * 1-5"
+    - cron: "30 7 * * 1-5"
   workflow_dispatch:
     inputs:
       dry-run:

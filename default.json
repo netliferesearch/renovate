@@ -3,11 +3,20 @@
   "description": "Netlife Craft CMS update policy. Sites extend this with one line.",
   "enabledManagers": ["composer"],
   "timezone": "Europe/Oslo",
-  "rangeStrategy": "update-lockfile",
+  "rangeStrategy": "pin",
   "dependencyDashboard": true,
   "labels": ["renovate"],
   "prConcurrentLimit": 6,
+  "platformAutomerge": false,
+  "automergeSchedule": ["* 8-11 * * 1-4"],
   "gitIgnoredAuthors": ["craft-ci@netlife.no"],
+  "lockFileMaintenance": {
+    "description": "Monthly fresh resolve of composer.lock, the first Monday. Moves the packages only the lock names, which no direct update ever touches. Labelled preview, merged by a developer.",
+    "enabled": true,
+    "schedule": ["* 5-9 1-7 * 1"],
+    "automerge": false,
+    "addLabels": ["preview"]
+  },
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": ["renovate", "security"],
@@ -24,16 +33,16 @@
       "matchManagers": ["composer"],
       "matchUpdateTypes": ["patch"],
       "groupName": "Craft patches",
-      "schedule": ["before 6am on monday"],
+      "schedule": ["* 5-9 * * 1"],
       "minimumReleaseAge": "3 days",
       "automerge": true
     },
     {
-      "description": "Minor updates, one PR a month, always merged by a developer. Labelled preview so craft-preview builds a site to look at.",
+      "description": "Minor updates, one PR a month on the second Monday, a week after lock file maintenance. Always merged by a developer. Labelled preview so craft-preview builds a site to look at.",
       "matchManagers": ["composer"],
       "matchUpdateTypes": ["minor"],
       "groupName": "Craft minors",
-      "schedule": ["before 6am on the first day of the month"],
+      "schedule": ["* 5-9 8-14 * 1"],
       "minimumReleaseAge": "3 days",
       "automerge": false,
       "addLabels": ["preview"]
